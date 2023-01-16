@@ -1,15 +1,13 @@
 const url = "http://hn.algolia.com/api/v1/search?query=javascript";
 
+const result = await fetch(url).then((result) => result.json());
+
 console.log("Hello Deno");
 
-fetch(url)
-  .then((result) => result.json())
-  .then((result) => {
-    const stories = result.hits.map((hit) => ({
-      title: hit.title,
-      url: hit.url,
-      createdAt: hit.created_at_i,
-    }));
+const stories = result.hits.map((hit) => ({
+  title: hit.title,
+  url: hit.url,
+  createdAt: hit.created_at_i,
+}));
 
-    console.log(stories);
-  });
+console.log(stories);
