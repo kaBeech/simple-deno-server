@@ -1,8 +1,8 @@
+import { serve } from "https://deno.land/std/http/server.ts";
+
 const url = "http://hn.algolia.com/api/v1/search?query=javascript";
 
 const result = await fetch(url).then((result) => result.json());
-
-console.log("Hello Deno");
 
 const stories = result.hits.map((hit) => ({
   title: hit.title,
@@ -10,4 +10,8 @@ const stories = result.hits.map((hit) => ({
   createdAt: hit.created_at_i,
 }));
 
-console.log(stories);
+serve((_req) => new Response(JSON.stringify(stories)), {
+  port: 8000,
+});
+
+console.log("Hello Deno");
