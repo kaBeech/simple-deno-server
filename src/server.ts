@@ -43,4 +43,8 @@ app.use(routerThree.allowedMethods());
 app.use(routerFour.routes());
 app.use(routerFour.allowedMethods());
 
+app.addEventListener("listen", () => {
+  console.log(`Listening on localhost:${port}`);
+});
+
 await app.listen({ port });
