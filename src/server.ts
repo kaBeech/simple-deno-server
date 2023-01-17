@@ -5,6 +5,8 @@ import {
   Router,
 } from "https://deno.land/x/oak/mod.ts";
 
+import { messages, users } from "./pseudoDB.ts";
+
 const port = 8000;
 const app = new Application();
 
@@ -28,11 +30,16 @@ router.get("/", (ctx) => {
 });
 
 router.get("/users", (ctx) => {
-  ctx.response.body = "GET HTTP method on user resource";
+  ctx.response.body = Array.from(users.values());
 });
 
 router.post("/users", (ctx) => {
   ctx.response.body = "POST HTTP method on user resource";
+});
+
+router.get("/users/:userId", (ctx) => {
+  const { userId } = helpers.getQuery(ctx, { mergeParams: true });
+  ctx.response.body = users.get(userId);
 });
 
 router.put("/users/:userId", (ctx) => {
@@ -43,6 +50,15 @@ router.put("/users/:userId", (ctx) => {
 router.delete("/users/:userId", (ctx) => {
   const { userId } = helpers.getQuery(ctx, { mergeParams: true });
   ctx.response.body = `PUT DELETE method on user/${userId} resource`;
+});
+
+router.get("/messages", (ctx) => {
+  ctx.response.body = Array.from(messages.values());
+});
+
+router.get("/messages/:messageId", (ctx) => {
+  const { messageId } = helpers.getQuery(ctx, { mergeParams: true });
+  ctx.response.body = messages.get(messageId);
 });
 
 app.use(router.routes());
