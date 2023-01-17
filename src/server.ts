@@ -22,6 +22,22 @@ router.get("/", (ctx) => {
   ctx.response.body = "Hello Deno 2!";
 });
 
+router.get("/", (ctx) => {
+  ctx.response.body = "Received a GET HTTP method";
+});
+
+router.post("/", (ctx) => {
+  ctx.response.body = "Received a POST HTTP method";
+});
+
+router.put("/", (ctx) => {
+  ctx.response.body = "Received a PUT HTTP method";
+});
+
+router.delete("/", (ctx) => {
+  ctx.response.body = "Received a DELETE HTTP method";
+});
+
 app.use(router.routes());
 app.use(router.allowedMethods());
 
