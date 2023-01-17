@@ -1,4 +1,9 @@
-import { Application, Context, Router } from "https://deno.land/x/oak/mod.ts";
+import {
+  Application,
+  Context,
+  helpers,
+  Router,
+} from "https://deno.land/x/oak/mod.ts";
 
 const port = 8000;
 const app = new Application();
@@ -22,20 +27,22 @@ router.get("/", (ctx) => {
   ctx.response.body = "Hello Deno 2!";
 });
 
-router.get("/", (ctx) => {
-  ctx.response.body = "Received a GET HTTP method";
+router.get("/users", (ctx) => {
+  ctx.response.body = "GET HTTP method on user resource";
 });
 
-router.post("/", (ctx) => {
-  ctx.response.body = "Received a POST HTTP method";
+router.post("/users", (ctx) => {
+  ctx.response.body = "POST HTTP method on user resource";
 });
 
-router.put("/", (ctx) => {
-  ctx.response.body = "Received a PUT HTTP method";
+router.put("/users/:userId", (ctx) => {
+  const { userId } = helpers.getQuery(ctx, { mergeParams: true });
+  ctx.response.body = `PUT HTTP method on user/${userId} resource`;
 });
 
-router.delete("/", (ctx) => {
-  ctx.response.body = "Received a DELETE HTTP method";
+router.delete("/users/:userId", (ctx) => {
+  const { userId } = helpers.getQuery(ctx, { mergeParams: true });
+  ctx.response.body = `PUT DELETE method on user/${userId} resource`;
 });
 
 app.use(router.routes());
