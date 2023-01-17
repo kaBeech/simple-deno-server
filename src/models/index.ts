@@ -35,4 +35,4 @@ messages.set("2", {
   userId: "2",
 });
 
-export { messages, users };
+export default { messages, users };

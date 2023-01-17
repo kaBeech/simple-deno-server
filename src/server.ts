@@ -1,11 +1,7 @@
-import {
-  Application,
-  Context,
-  helpers,
-  Router,
-} from "https://deno.land/x/oak/mod.ts";
+import { Application, Context, Router } from "https://deno.land/x/oak/mod.ts";
 
-import { messages, users } from "./pseudoDB.ts";
+import models from "./models/index.ts";
+import routes from "./routes/index.ts";
 
 const port = 8000;
 const app = new Application();
@@ -21,66 +17,50 @@ const logging = async (ctx: Context, next: Function) => {
 
 app.use(logging);
 
-router.get("/", (ctx) => {
-  ctx.response.body = "Hello Deno!";
-}).get("/1", (ctx) => {
-  ctx.response.body = "Hello Deno 1!";
-}).get("/2", (ctx) => {
-  ctx.response.body = "Hello Deno 2!";
+app.use(async (ctx, next) => {
+  ctx.state = {
+    models,
+    me: models.users.get("1"),
+  };
+
+  await next();
 });
 
-router.get("/users", (ctx) => {
-  ctx.response.body = Array.from(users.values());
-});
+app.use(routes.session.allowedMethods());
+app.use(routes.session.routes());
+app.use(routes.user.allowedMethods());
+app.use(routes.user.routes());
+app.use(routes.message.allowedMethods());
+app.use(routes.message.routes());
 
-router.post("/users", (ctx) => {
-  ctx.response.body = "POST HTTP method on user resource";
-});
+// router.get("/", (ctx) => {
+//   ctx.response.body = "Hello Deno!";
+// }).get("/1", (ctx) => {
+//   ctx.response.body = "Hello Deno 1!";
+// }).get("/2", (ctx) => {
+//   ctx.response.body = "Hello Deno 2!";
+// });
 
-router.get("/users/:userId", (ctx) => {
-  const { userId } = helpers.getQuery(ctx, { mergeParams: true });
-  ctx.response.body = users.get(userId);
-});
+// app.use(router.routes());
+// app.use(router.allowedMethods());
 
-router.put("/users/:userId", (ctx) => {
-  const { userId } = helpers.getQuery(ctx, { mergeParams: true });
-  ctx.response.body = `PUT HTTP method on user/${userId} resource`;
-});
+// const routerThree = new Router();
 
-router.delete("/users/:userId", (ctx) => {
-  const { userId } = helpers.getQuery(ctx, { mergeParams: true });
-  ctx.response.body = `PUT DELETE method on user/${userId} resource`;
-});
+// routerThree.get("/3", (ctx) => {
+//   ctx.response.body = "Hello Deno 3!";
+// });
 
-router.get("/messages", (ctx) => {
-  ctx.response.body = Array.from(messages.values());
-});
+// const routerFour = new Router();
 
-router.get("/messages/:messageId", (ctx) => {
-  const { messageId } = helpers.getQuery(ctx, { mergeParams: true });
-  ctx.response.body = messages.get(messageId);
-});
+// routerFour.get("/4", (ctx) => {
+//   ctx.response.body = "Hello Deno 4!";
+// });
 
-app.use(router.routes());
-app.use(router.allowedMethods());
+// app.use(routerThree.routes());
+// app.use(routerThree.allowedMethods());
 
-const routerThree = new Router();
-
-routerThree.get("/3", (ctx) => {
-  ctx.response.body = "Hello Deno 3!";
-});
-
-const routerFour = new Router();
-
-routerFour.get("/4", (ctx) => {
-  ctx.response.body = "Hello Deno 4!";
-});
-
-app.use(routerThree.routes());
-app.use(routerThree.allowedMethods());
-
-app.use(routerFour.routes());
-app.use(routerFour.allowedMethods());
+// app.use(routerFour.routes());
+// app.use(routerFour.allowedMethods());
 
 app.addEventListener("listen", () => {
   console.log(`Listening on localhost:${port}`);
